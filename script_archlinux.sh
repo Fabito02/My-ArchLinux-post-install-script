@@ -17,7 +17,7 @@ PKGS_PACMAN=(
     adw-gtk-theme discord btop steam gamemode mangohud ryujinx 
     android-tools scrcpy faugus-launcher pcsx2 snes9x dolphin-emu 
     cemu drawing clapper telegram-desktop qbittorrent impression 
-    lact gparted dconf-editor gdm-settings zed ghostty 
+    lact-libadwaita gparted dconf-editor gdm-settings zed ghostty 
     nvidia-580xx-utils nvidia-580xx-dkms lib32-nvidia-580xx-utils 
     nvidia-settings linux-zen-headers gstreamer-vaapi 
     noto-fonts-cjk noto-fonts-emoji paru zsh zsh-completions 
