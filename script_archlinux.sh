@@ -4,6 +4,10 @@ set -e
 
 VERDE='\033[0;32m'
 NC='\033[0m'
+MK_CONF="/etc/mkinitcpio.conf"
+LOADER_DIR="/boot/loader/entries"
+
+sudo -v
 
 if [ "$EUID" -eq 0 ]; then
   echo "Execute o script como usuário comum."
@@ -11,10 +15,11 @@ if [ "$EUID" -eq 0 ]; then
 fi
 
 CACHE="$HOME/.cache/script_arch"
+rm -rf "$CACHE"
 mkdir -p "$CACHE"
 
 PKGS_PACMAN=(
-    adw-gtk-theme discord btop steam gamemode mangohud ryujinx 
+    base-devel adw-gtk-theme discord btop steam gamemode mangohud ryujinx 
     android-tools scrcpy faugus-launcher pcsx2 snes9x dolphin-emu 
     cemu drawing clapper telegram-desktop qbittorrent impression 
     lact-libadwaita gparted dconf-editor gdm-settings zed ghostty 
@@ -22,7 +27,7 @@ PKGS_PACMAN=(
     nvidia-settings linux-zen-headers gstreamer-vaapi 
     noto-fonts-cjk noto-fonts-emoji paru zsh zsh-completions 
     switcheroo-control zsh-syntax-highlighting zsh-autosuggestions 
-    git npm ffmpegthumbnailer nautilus-open-any-terminal
+    git npm ffmpegthumbnailer nautilus-open-any-terminal plymouth
 )
 
 PKGS_FLATPAK=(
@@ -114,6 +119,29 @@ gsettings set org.gnome.desktop.interface icon-theme 'MoreWaita'
 cd "$CACHE"
 git clone --depth 1 https://github.com/maximilionus/lucidglyph
 cd lucidglyph && sudo ./lucidglyph.sh install
+
+echo -e "${VERDE}Instalando Plymouth${NC}"
+sudo sed -Ei '/^HOOKS=/ { /plymouth/! s/(udev)/\1 plymouth/ }' "$MK_CONF"
+
+if [ -d "$LOADER_DIR" ]; then
+    for conf in "$LOADER_DIR"/*.conf; do
+        [ -f "$conf" ] && grep -q "^options" "$conf" || continue
+
+        grep -q "quiet" "$conf"  || sudo sed -i '/^options/ s/$/ quiet/' "$conf"
+        grep -q "splash" "$conf" || sudo sed -i '/^options/ s/$/ splash/' "$conf"
+        
+        echo " -> Configurado: $(basename "$conf")"
+    done
+else
+    echo "Diretório $LOADER_DIR não encontrado. Pulando bootloader."
+fi
+
+echo "Regenerando initramfs..."
+sudo mkinitcpio -P
+
+echo -e "${VERDE}Instalando o tema ${NC}"
+paru -S --noconfirm plymouth-theme-arch-darwin
+sudo plymouth-set-default-theme -R arch-darwin
 
 echo -e "${VERDE}Limpando arquivos temporários...${NC}"
 rm -rf "$CACHE"
