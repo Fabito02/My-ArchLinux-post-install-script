@@ -27,7 +27,7 @@ PKGS_PACMAN=(
     nvidia-settings linux-zen-headers gstreamer-vaapi 
     noto-fonts-cjk noto-fonts-emoji paru zsh zsh-completions 
     switcheroo-control zsh-syntax-highlighting zsh-autosuggestions 
-    git npm ffmpegthumbnailer nautilus-open-any-terminal plymouth
+    git npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch
 )
 
 PKGS_FLATPAK=(
@@ -110,15 +110,19 @@ sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark
 gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3'
 gsettings set org.gnome.desktop.interface color-scheme 'default'
 
-echo -e "${VERDE}Instalando MoreWaita e Lucidglyph...${NC}"
+echo -e "${VERDE}Instalando MoreWaita, Adwaita Colors e Lucidglyph...${NC}"
 cd "$CACHE"
 git clone https://github.com/somepaulo/MoreWaita.git
 cd MoreWaita && sudo ./install.sh
 gsettings set org.gnome.desktop.interface icon-theme 'MoreWaita'
-
 cd "$CACHE"
 git clone --depth 1 https://github.com/maximilionus/lucidglyph
 cd lucidglyph && sudo ./lucidglyph.sh install
+cd "$CACHE"
+git clone https://github.com/dpejoh/Adwaita-colors
+cd Adwaita-colors
+sudo ./setup -i
+sudo ./morewaita.sh
 
 echo -e "${VERDE}Instalando Plymouth${NC}"
 sudo sed -Ei '/^HOOKS=/ { /plymouth/! s/(udev)/\1 plymouth/ }' "$MK_CONF"
