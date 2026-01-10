@@ -124,6 +124,10 @@ cd Adwaita-colors
 sudo ./setup -i
 sudo ./morewaita.sh
 
+echo -e "${VERDE}Configurando tamanho do cursor e tema Bibata Modern Classic${NC}"
+gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Classic'
+gsettings set org.gnome.desktop.interface cursor-size 20
+
 echo -e "${VERDE}Instalando Plymouth${NC}"
 sudo sed -Ei '/^HOOKS=/ { /plymouth/! s/(udev)/\1 plymouth/ }' "$MK_CONF"
 
