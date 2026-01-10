@@ -27,7 +27,7 @@ PKGS_PACMAN=(
     nvidia-settings linux-zen-headers gstreamer-vaapi 
     noto-fonts-cjk noto-fonts-emoji paru zsh zsh-completions 
     switcheroo-control zsh-syntax-highlighting zsh-autosuggestions 
-    git npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch
+    git npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch bibata-cursor-theme
 )
 
 PKGS_FLATPAK=(
