@@ -147,9 +147,12 @@ fi
 echo "Regenerando initramfs..."
 sudo mkinitcpio -P
 
-echo -e "${VERDE}Instalando o tema ${NC}"
+echo -e "${VERDE}Instalando o tema Plymouth ${NC}"
 paru -S --noconfirm plymouth-theme-arch-darwin
 sudo plymouth-set-default-theme -R arch-darwin
+
+echo -e "${VERDE}Habilitando NTSYNC (Para jogos Windows via Proton/Wine) ${NC}"
+echo "ntsync" | sudo tee /etc/modules-load.d/ntsync.conf
 
 echo -e "${VERDE}Limpando arquivos temporários...${NC}"
 rm -rf "$CACHE"
