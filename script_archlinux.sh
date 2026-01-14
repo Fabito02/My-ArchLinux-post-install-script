@@ -59,7 +59,7 @@ font-size = 11
 window-padding-x = 8
 window-height = 24
 window-width = 70
-confirm-close-surface = false
+gtk-titlebar-style = tabs
 EOF
 
 echo -e "${VERDE}Configurando ZSH (Pure, History, Plugins)...${NC}"
