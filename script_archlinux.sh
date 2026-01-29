@@ -18,16 +18,19 @@ CACHE="$HOME/.cache/script_arch"
 rm -rf "$CACHE"
 mkdir -p "$CACHE"
 
+PAMAC_RULE_PATH="/etc/polkit-1/rules.d/99-pamac.rules"
+
 PKGS_PACMAN=(
     base-devel adw-gtk-theme discord btop steam gamemode mangohud ryujinx 
     android-tools scrcpy faugus-launcher pcsx2 snes9x dolphin-emu 
     cemu drawing clapper telegram-desktop qbittorrent impression 
     lact-libadwaita gparted dconf-editor gdm-settings zed ghostty 
     nvidia-580xx-utils nvidia-580xx-dkms lib32-nvidia-580xx-utils 
-    nvidia-settings linux-zen-headers gstreamer-vaapi 
+    nvidia-settings linux-zen-headers gstreamer-vaapi firefoxpwa
     noto-fonts-cjk noto-fonts-emoji paru zsh zsh-completions 
     switcheroo-control zsh-syntax-highlighting zsh-autosuggestions 
-    git npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch bibata-cursor-theme
+    git npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch 
+    bibata-cursor-theme pamac
 )
 
 PKGS_FLATPAK=(
@@ -54,12 +57,23 @@ sudo pacman -Syu --needed --noconfirm "${PKGS_PACMAN[@]}"
 echo -e "${VERDE}Configurando Ghostty...${NC}"
 mkdir -p "$HOME/.config/ghostty"
 cat << 'EOF' > "$HOME/.config/ghostty/config"
-theme = Adwaita Dark
+theme = light:Adwaita,dark:Adwaita Dark
 font-size = 11
 window-padding-x = 8
 window-height = 24
 window-width = 70
 gtk-titlebar-style = tabs
+gtk-wide-tabs = false
+gtk-custom-css = ./styles.css
+background-opacity = 0.65
+alpha-blending = native
+EOF
+
+cat << 'EOF' > "$HOME/.config/ghostty/styles.css"
+revealer.raised.top-bar { 
+    background: alpha(@view_bg_color, 0.65); 
+    box-shadow: none; 
+}
 EOF
 
 echo -e "${VERDE}Configurando ZSH (Pure, History, Plugins)...${NC}"
@@ -147,12 +161,25 @@ fi
 echo "Regenerando initramfs..."
 sudo mkinitcpio -P
 
-echo -e "${VERDE}Instalando o tema Plymouth ${NC}"
+echo -e "${VERDE}Instalando o tema Plymouth${NC}"
 paru -S --noconfirm plymouth-theme-arch-darwin
 sudo plymouth-set-default-theme -R arch-darwin
 
-echo -e "${VERDE}Habilitando NTSYNC (Para jogos Windows via Proton/Wine) ${NC}"
+echo -e "${VERDE}Habilitando NTSYNC (Para jogos Windows via Proton/Wine)${NC}"
 echo "ntsync" | sudo tee /etc/modules-load.d/ntsync.conf
+
+echo -e "${VERDE}Configurando Polkit rule para Pamac${NC}"
+if grep -q '^wheel:' /etc/group; then USER_GROUP="wheel"; else USER_GROUP="sudo"; fi
+
+sudo tee $PAMAC_RULE_PATH > /dev/null <<EOF
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.manjaro.pamac.commit" ||
+         action.id == "org.manjaro.pamac.modify") &&
+        subject.isInGroup("$USER_GROUP")) {
+        return polkit.Result.YES;
+    }
+});
+EOF
 
 echo -e "${VERDE}Limpando arquivos temporários...${NC}"
 rm -rf "$CACHE"
