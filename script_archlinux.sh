@@ -30,7 +30,7 @@ PKGS_PACMAN=(
     noto-fonts-cjk noto-fonts-emoji paru zsh zsh-completions 
     switcheroo-control zsh-syntax-highlighting zsh-autosuggestions 
     git npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch 
-    bibata-cursor-theme pamac
+    bibata-cursor-theme pamac bazaar fuse
 )
 
 PKGS_FLATPAK=(
@@ -53,6 +53,9 @@ fi
 
 echo -e "${VERDE}Atualizando sistema e instalando pacotes pacman...${NC}"
 sudo pacman -Syu --needed --noconfirm "${PKGS_PACMAN[@]}"
+
+echo -e "${VERDE}Removendo Gnome Software...${NC}"
+sudo pacman -Rns gnome-software --noconfirm
 
 echo -e "${VERDE}Configurando Ghostty...${NC}"
 mkdir -p "$HOME/.config/ghostty"
