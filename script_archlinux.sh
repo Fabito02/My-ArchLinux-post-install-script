@@ -29,8 +29,8 @@ PKGS_PACMAN=(
     nvidia-settings linux-zen-headers gstreamer-vaapi firefoxpwa
     noto-fonts-cjk noto-fonts-emoji paru zsh zsh-completions 
     switcheroo-control zsh-syntax-highlighting zsh-autosuggestions 
-    git npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch 
-    bibata-cursor-theme pamac bazaar fuse
+    npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch 
+    bibata-cursor-theme pamac bazaar fuse zen-browser lsfg-vk
 )
 
 PKGS_FLATPAK=(
@@ -40,14 +40,17 @@ PKGS_FLATPAK=(
     com.cassidyjames.clairvoyant io.github.jeffshee.Hidamari 
     com.vysp3r.ProtonPlus it.mijorus.gearlever com.github.tchx84.Flatseal 
     org.nickvision.tubeconverter io.github.vikdevelop.SaveDesktop 
-    com.mattjakeman.ExtensionManager
+    com.mattjakeman.ExtensionManager net.sourceforge.wxEDID io.missioncenter.MissionCenter
+    io.github.diegopvlk.Cine
 )
 
 echo -e "${VERDE}Configurando Chaotic-AUR...${NC}"
+sudo pacman -S git --noconfirm
+
 if ! pacman -Qi chaotic-keyring &> /dev/null; then
     cd "$CACHE"
     git clone https://github.com/SharafatKarim/chaotic-AUR-installer.git
-    cd chaotic-AUR-installer && sudo ./install.bash
+    cd chaotic-AUR-installer && chmod +x install.bash && sudo ./install.bash
     cd "$CACHE"
 fi
 
@@ -55,7 +58,11 @@ echo -e "${VERDE}Atualizando sistema e instalando pacotes pacman...${NC}"
 sudo pacman -Syu --needed --noconfirm "${PKGS_PACMAN[@]}"
 
 echo -e "${VERDE}Removendo Gnome Software...${NC}"
-sudo pacman -Rns gnome-software --noconfirm
+if pacman -Qs gnome-software > /dev/null; then
+	sudo pacman -Rns gnome-software --noconfirm
+else
+    echo "O Gnome Software não está instalado."
+fi
 
 echo -e "${VERDE}Configurando Ghostty...${NC}"
 mkdir -p "$HOME/.config/ghostty"
@@ -68,13 +75,13 @@ window-width = 70
 gtk-titlebar-style = tabs
 gtk-wide-tabs = false
 gtk-custom-css = ./styles.css
-background-opacity = 0.65
+background-opacity = 1
 alpha-blending = native
 EOF
 
 cat << 'EOF' > "$HOME/.config/ghostty/styles.css"
 revealer.raised.top-bar { 
-    background: alpha(@view_bg_color, 0.65); 
+    background: alpha(@view_bg_color, 1); 
     box-shadow: none; 
 }
 EOF
@@ -121,11 +128,13 @@ flatpak install org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark -y
 sudo flatpak override --filesystem=xdg-data/themes
 sudo flatpak override --filesystem=xdg-config/gtk-3.0
 sudo flatpak override --filesystem=xdg-config/gtk-4.0
+flatpak override --user --filesystem=xdg-cache/thumbnails
 sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3
 sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark
 
 gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3'
 gsettings set org.gnome.desktop.interface color-scheme 'default'
+gsettings set org.gnome.shell disable-extension-version-validation true
 
 echo -e "${VERDE}Instalando MoreWaita, Adwaita Colors e Lucidglyph...${NC}"
 cd "$CACHE"
