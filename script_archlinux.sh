@@ -26,11 +26,11 @@ PKGS_PACMAN=(
     cemu drawing clapper telegram-desktop qbittorrent impression 
     lact-libadwaita gparted dconf-editor gdm-settings zed ghostty 
     nvidia-580xx-utils nvidia-580xx-dkms lib32-nvidia-580xx-utils 
-    nvidia-settings linux-zen-headers gstreamer-vaapi firefoxpwa
+    nvidia-580xx-settings linux-zen-headers gstreamer-vaapi firefoxpwa
     noto-fonts-cjk noto-fonts-emoji paru zsh zsh-completions 
     switcheroo-control zsh-syntax-highlighting zsh-autosuggestions 
     npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch 
-    bibata-cursor-theme pamac bazaar fuse zen-browser lsfg-vk
+    bibata-cursor-theme pamac bazaar fuse zen-browser lsfg-vk eden-git
 )
 
 PKGS_FLATPAK=(
