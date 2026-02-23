@@ -23,14 +23,15 @@ PAMAC_RULE_PATH="/etc/polkit-1/rules.d/99-pamac.rules"
 PKGS_PACMAN=(
     base-devel adw-gtk-theme discord btop steam gamemode mangohud ryujinx 
     android-tools scrcpy faugus-launcher pcsx2 snes9x dolphin-emu 
-    cemu drawing clapper telegram-desktop qbittorrent impression 
+    cemu drawing telegram-desktop qbittorrent impression 
     lact-libadwaita gparted dconf-editor gdm-settings zed ghostty 
     nvidia-580xx-utils nvidia-580xx-dkms lib32-nvidia-580xx-utils 
-    nvidia-580xx-settings linux-zen-headers gstreamer-vaapi firefoxpwa
+    nvidia-580xx-settings linux-zen-headers firefoxpwa
     noto-fonts-cjk noto-fonts-emoji paru zsh zsh-completions 
     switcheroo-control zsh-syntax-highlighting zsh-autosuggestions 
     npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch 
-    bibata-cursor-theme pamac bazaar fuse zen-browser lsfg-vk eden-git
+    bibata-cursor-theme pamac bazaar fuse zen-browser lsfg-vk eden-git 
+    extension-manager refine supertuxkart
 )
 
 PKGS_FLATPAK=(
@@ -40,8 +41,9 @@ PKGS_FLATPAK=(
     com.cassidyjames.clairvoyant io.github.jeffshee.Hidamari 
     com.vysp3r.ProtonPlus it.mijorus.gearlever com.github.tchx84.Flatseal 
     org.nickvision.tubeconverter io.github.vikdevelop.SaveDesktop 
-    com.mattjakeman.ExtensionManager net.sourceforge.wxEDID io.missioncenter.MissionCenter
-    io.github.diegopvlk.Cine
+    net.sourceforge.wxEDID io.missioncenter.MissionCenter 
+    io.github.diegopvlk.Cine io.github.amit9838.mousam 
+    io.github.tobagin.karere
 )
 
 echo -e "${VERDE}Configurando Chaotic-AUR...${NC}"
@@ -57,11 +59,14 @@ fi
 echo -e "${VERDE}Atualizando sistema e instalando pacotes pacman...${NC}"
 sudo pacman -Syu --needed --noconfirm "${PKGS_PACMAN[@]}"
 
-echo -e "${VERDE}Removendo Gnome Software...${NC}"
-if pacman -Qs gnome-software > /dev/null; then
-	sudo pacman -Rns gnome-software --noconfirm
+echo -e "${VERDE}Removendo aplicativos não utilizados...${NC}"
+pacman -Qq decibels snapshot gnome-music epiphany gnome-software gnome-weather yelp gnome-user-docs gnome-tour gnome-tweaks htop 2>/dev/null | sudo pacman -Rns - --noconfirm
+
+if ls ~/.local/share/applications/org.gnome.Extensions.desktop > /dev/null; then
+    echo "O Gnome Extensions já está oculto."
 else
-    echo "O Gnome Software não está instalado."
+    cp /usr/share/applications/org.gnome.Extensions.desktop ~/.local/share/applications/
+    echo "NoDisplay=true" >> ~/.local/share/applications/org.gnome.Extensions.desktop
 fi
 
 echo -e "${VERDE}Configurando Ghostty...${NC}"
