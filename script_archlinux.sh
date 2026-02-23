@@ -60,7 +60,7 @@ echo -e "${VERDE}Atualizando sistema e instalando pacotes pacman...${NC}"
 sudo pacman -Syu --needed --noconfirm "${PKGS_PACMAN[@]}"
 
 echo -e "${VERDE}Removendo aplicativos não utilizados...${NC}"
-pacman -Qq decibels snapshot gnome-music epiphany gnome-software gnome-weather yelp gnome-user-docs gnome-tour gnome-tweaks htop 2>/dev/null | sudo pacman -Rns - --noconfirm
+pacman -Qq decibels showtime gnome-music epiphany gnome-software gnome-weather yelp gnome-user-docs gnome-tour gnome-tweaks htop 2>/dev/null | sudo pacman -Rns - --noconfirm
 
 if ls ~/.local/share/applications/org.gnome.Extensions.desktop > /dev/null; then
     echo "O Gnome Extensions já está oculto."
