@@ -31,7 +31,7 @@ PKGS_PACMAN=(
     switcheroo-control zsh-syntax-highlighting zsh-autosuggestions 
     npm ffmpegthumbnailer nautilus-open-any-terminal plymouth fastfetch 
     bibata-cursor-theme pamac bazaar fuse zen-browser lsfg-vk eden-git 
-    extension-manager refine supertuxkart
+    extension-manager refine supertuxkart libgda6
 )
 
 PKGS_FLATPAK=(
