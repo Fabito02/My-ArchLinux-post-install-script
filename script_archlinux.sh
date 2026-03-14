@@ -20,6 +20,13 @@ mkdir -p "$CACHE"
 
 PAMAC_RULE_PATH="/etc/polkit-1/rules.d/99-pamac.rules"
 
+AUTH_FILE="/etc/pam.d/system-auth"
+POLKIT_USR="/usr/lib/pam.d/polkit-1"
+POLKIT_ETC="/etc/pam.d/polkit-1"
+
+HOWDY_LINE="auth sufficient pam_howdy.so"
+UNIX_LINE="auth sufficient pam_unix.so try_first_pass likeauth nullok"
+
 PKGS_PACMAN=(
     base-devel adw-gtk-theme discord btop steam gamemode mangohud ryujinx 
     android-tools scrcpy faugus-launcher pcsx2 snes9x dolphin-emu 
@@ -60,7 +67,7 @@ echo -e "${VERDE}Atualizando sistema e instalando pacotes pacman...${NC}"
 sudo pacman -Syu --needed --noconfirm "${PKGS_PACMAN[@]}"
 
 echo -e "${VERDE}Removendo aplicativos não utilizados...${NC}"
-pacman -Qq decibels showtime gnome-music epiphany gnome-software gnome-weather yelp gnome-user-docs gnome-tour gnome-tweaks htop 2>/dev/null | sudo pacman -Rns - --noconfirm
+pacman -Qq decibels showtime gnome-music epiphany gnome-software gnome-weather yelp gnome-user-docs gnome-tour htop 2>/dev/null | sudo pacman -Rns - --noconfirm
 
 if ls ~/.local/share/applications/org.gnome.Extensions.desktop > /dev/null; then
     echo "O Gnome Extensions já está oculto."
@@ -184,6 +191,34 @@ sudo plymouth-set-default-theme -R arch-darwin
 
 echo -e "${VERDE}Habilitando NTSYNC (Para jogos Windows via Proton/Wine)${NC}"
 echo "ntsync" | sudo tee /etc/modules-load.d/ntsync.conf
+
+echo -e "${VERDE}Configurando o Howdy (para reconhecimento facial)${NC}"
+if [ -f "$AUTH_FILE" ]; then
+    if ! grep -q "pam_howdy.so" "$AUTH_FILE"; then
+        sudo cp "$AUTH_FILE" "${AUTH_FILE}.bak"
+        sudo sed -i "/#%PAM-1.0/a $HOWDY_LINE" "$AUTH_FILE"
+        echo "Sucesso: Howdy adicionado em $AUTH_FILE"
+    else
+        echo "Aviso: Howdy já existe no $AUTH_FILE"
+    fi
+fi
+
+if [ -f "$POLKIT_USR" ]; then
+    if [ ! -f "$POLKIT_ETC" ]; then
+        echo "Copiando base do polkit de /usr para /etc..."
+        sudo cp "$POLKIT_USR" "$POLKIT_ETC"
+    fi
+
+    if ! grep -q "auth sufficient pam_unix.so try_first_pass likeauth nullok" "$POLKIT_ETC"; then
+        sudo cp "$POLKIT_ETC" "${POLKIT_ETC}.bak"
+        sudo sed -i "/#%PAM-1.0/a $UNIX_LINE" "$POLKIT_ETC"
+        echo "Prevenção de desbloqueio unicamente pela face aplicada em $POLKIT_ETC"
+    else
+        echo "Aviso: Prevenção já aplicada em $POLKIT_ETC"
+    fi
+else
+    echo "Erro: Arquivo base $POLKIT_USR não encontrado!"
+fi
 
 echo -e "${VERDE}Configurando Polkit rule para Pamac${NC}"
 if grep -q '^wheel:' /etc/group; then USER_GROUP="wheel"; else USER_GROUP="sudo"; fi
