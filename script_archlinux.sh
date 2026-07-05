@@ -112,15 +112,16 @@ mkdir -p "$CACHE"
 
 PKGS_PACMAN=(
     base-devel adw-gtk-theme discord btop steam gamemode mangohud ryujinx 
-    android-tools scrcpy faugus-launcher pcsx2 snes9x dolphin-emu 
-    drawing telegram-desktop qbittorrent impression flatpak firefoxpwa
+    android-tools scrcpy faugus-launcher snes9x dolphin-emu drawing 
+    qbittorrent impression flatpak firefoxpwa telegram-desktop 
     lact gparted dconf-editor gdm-settings zed ghostty ufw linux-zen 
     linux-zen-headers noto-fonts-cjk noto-fonts-emoji paru zsh zsh-completions 
     switcheroo-control zsh-syntax-highlighting zsh-autosuggestions 
     npm ffmpegthumbnailer plymouth fastfetch zram-generator tuned tuned-ppd
     bibata-cursor-theme pamac bazaar fuse zen-browser chromium lsfg-vk eden-git 
     extension-manager refine supertuxkart libgda6 geary github-cli 
-    ghostty-nautilus valent-git gnome-boxes amberol mangojuice fractal
+    ghostty-nautilus valent-git gnome-boxes amberol mangojuice fractal newsflash
+    cups cups-pdf cups-filters 
 )
 
 PKGS_FLATPAK=(
@@ -136,7 +137,7 @@ PKGS_FLATPAK=(
 )
 
 PKGS_AUR=(
-    gnome-shell-extension-valent-git cemu-bin morewaita-icon-theme-git mixtapes-git
+    gnome-shell-extension-valent-git cemu-bin morewaita-icon-theme-git mixtapes-git pcsx2-latest-bin
 )
 
 if [ ${#NVIDIA_PKGS[@]} -gt 0 ]; then
@@ -316,7 +317,7 @@ if [ -d "$LOADER_DIR" ]; then
         fi
         grep -q "quiet" "$conf"  || sudo sed -i '/^options/ s/$/ quiet/' "$conf"
         grep -q "splash" "$conf" || sudo sed -i '/^options/ s/$/ splash/' "$conf"
-        
+        sudo systemctl enable --now cups
         echo " -> Configurado: $(basename "$conf")"
     done
 else
@@ -372,6 +373,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now switcheroo-control.service
 sudo systemctl enable --now tuned
 sudo systemctl enable --now fstrim.timer
+sudo systemctl enable --now cups
 
 echo -e "${BLUE}Limpando arquivos temporários...${NC}"
 rm -rf "$CACHE"
